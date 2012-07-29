@@ -1,3 +1,68 @@
 #newItemForm {
 	margin: 0;
 }
+
+.slideBlock {
+	display: inline;
+}
+
+.slide {
+	display: block;
+}
+
+.icon-usd-neg {
+	background-image: url("../img/glyphicons-usd-neg.png") !important;
+    background-position: 0 0 !important;
+}
+
+.icon-usd-pos {
+	background-image: url("../img/glyphicons-usd-pos.png") !important;
+    background-position: 0 0 !important;
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) { ... }
+ 
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) { 
+	.slideBlock {
+		display: none;
+	}
+	select,
+	textarea,
+	input[type="text"],
+	input[type="password"],
+	input[type="datetime"],
+	input[type="datetime-local"],
+	input[type="date"],
+	input[type="month"],
+	input[type="time"],
+	input[type="week"],
+	input[type="number"],
+	input[type="email"],
+	input[type="url"],
+	input[type="search"],
+	input[type="tel"],
+	input[type="color"],
+	.uneditable-input {
+	  	margin-bottom: 9px !important; //9px
+	}
+	.hero-unit h1 {
+		font-size: .8em;
+		color: #FFF;
+	}
+	.input-prepend {
+		display: block !important;
+	}
+	.add-on {
+		margin-bottom: .6em;
+	}
+}
+ 
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) { ... }
+
+
+ 
+/* Large desktop */
+@media (min-width: 1200px) { ... }

@@ -723,7 +723,7 @@ pre code {
 }
 
 form {
-  margin: 0 0 18px;
+  margin: 0 0 0px; //0 0 18
 }
 
 fieldset {
@@ -791,7 +791,7 @@ input[type="color"],
   display: inline-block;
   height: 18px;
   padding: 4px;
-  margin-bottom: 9px;
+  margin-bottom: 0px; //9px
   font-size: 13px;
   line-height: 18px;
   color: #555555;

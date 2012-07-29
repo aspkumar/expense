@@ -17,5 +17,15 @@ $(function() {
 		  // maybe try dojox.storage or a third-party solution
 		  if (env=="DEV" || env=="TEST") alert("localstorage is not available!");
 		}
+
+		/**** Responsive dropdown for input ****/		
+		$("#note").on("click", function() {
+			if ($(window).width() < 768)
+				$(".slideBlock").css('display', 'inline');
+		});
+		$("#commit").click(function() {
+		    if ($(window).width() < 768)
+				$(".slideBlock").css('display', 'none');
+		});
 });
 
