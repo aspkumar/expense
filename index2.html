@@ -22,24 +22,50 @@
 		    <h1>Balance:</h1>
 		</div>
 		<div class="row well">
-				<form class="form">
-				    <input id="note" type="text" class="span3" placeholder="Note">
+				<form id="inputForm" class="form">
+				    <input name="note" id="note" type="text" class="span3" placeholder="Note">
 				    <div class="slideBlock">
 					    <div class="input-prepend" style="display: inline;">
 							<span class="add-on"><i class="icon-usd-neg"></i></span>
-							<input type="text" class="span2" placeholder="Expense">
+							<input name="expense" id="expense" type="text" class="span2" placeholder="Expense">
 						</div>
 					    <div class="input-prepend" style="display: inline;">
 							<span class="add-on"><i class="icon-usd-pos"></i></span>
-							<input type="text" class="span2" placeholder="Income">
+							<input name="income" id="income" type="text" class="span2" placeholder="Income">
 						</div>
 					    <div class="input-prepend" style="display: inline;">
 							<span class="add-on"><i class="icon-time"></i></span>
-							<input id="datepicker" type="text" class="span2" placeholder="Date">
+							<input name="date" id="datepicker" type="text" class="span2" placeholder="Date">
 						</div>
 				    	<button id="commit" type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Commit</button>
 				    </div>
 				</form>
+		</div>
+		<div class="row">
+			<table class="table table-striped table-bordered">
+			    <thead>
+			      	<tr>
+			      		<th>#</th>
+			        	<th><i class="icon-tags"></i> Item</th>
+			        	<th><i class="icon-usd-neg"></i> Expense</th>
+			        	<th><i class="icon-usd-pos"></i> Income</th>
+			        	<th><i class="icon-time"></i> Date</th>
+			        	<th></th>
+			      	</tr>
+			    </thead>
+			    <tbody>
+			    	<tr>
+			    		<td>…</td>
+			    		<td>…</td>
+			        	<td>…</td>
+			        	<td>…</td>
+			        	<td>…</td>
+			        	<td>
+			        		<a class="btn btn-danger" href="#"><i class="icon-trash icon-white"></i> Delete</a>
+			        	</td>
+			      	</tr>
+			    </tbody>
+			</table>
 		</div>
 	</div>
     <script src="js/scripts.js"></script>
