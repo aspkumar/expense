@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Expense Sheet</title>
+    <meta name="description" content="A simple expense sheet utilizing Local Storage and AJAX">
+    <meta name="author" content="#designs by tj.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../expense/css/jquery-ui-1.8.22.custom.css">
+    <link rel="stylesheet" href="../expense/css/bootstrap.css">
+    <link rel="stylesheet" href="../expense/css/bootstrap-responsive.css">
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="../expense/js/modernizr.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="row hero-unit">
+		    <h1>Balance:</h1>
+		</div>
+		<div class="row well">
+				<form class="form">
+				    <input id="note" type="text" class="span4" placeholder="Note">
+				    <div class="slideBlock">
+					    <input type="text" class="span2" placeholder="$ Expense">
+					    <input type="text" class="span2" placeholder="$ Income">
+					    <input type="text" class="span2" placeholder="Date">
+				    	<button id="commit" type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Commit</button>
+				    </div>
+				</form>
+		</div>
+	</div>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
