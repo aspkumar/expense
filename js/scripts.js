@@ -1,9 +1,26 @@
 var note, expense, income, date;
+var balanceF = "";
 
 var noteIn = $("#note");
 var expenseIn = $("#expense");
 var	incomeIn = $("#income");
 var	dateIn = $("#datepicker");
+
+/**** Currency reg ex for balance ****/
+	// Extend the default Number object with a formatMoney() method:
+	// usage: someVar.formatMoney(decimalPlaces, symbol, thousandsSeparator, decimalSeparator)
+	// defaults: (2, "$", ",", ".")
+	Number.prototype.formatMoney = function(places, symbol, thousand, decimal) {
+		places = !isNaN(places = Math.abs(places)) ? places : 2;
+		symbol = symbol !== undefined ? symbol : "$";
+		thousand = thousand || ",";
+		decimal = decimal || ".";
+		var number = this, 
+		    negative = number < 0 ? "-" : "",
+		    i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + "",
+		    j = (j = i.length) > 3 ? j % 3 : 0;
+		return symbol + negative + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "");
+	};
 
 $(function() {
 		var env = "PROD"; //DEV-TEST-PROD
@@ -29,17 +46,25 @@ $(function() {
 				$(".slideBlock").css('display', 'inline');
 		});
 
+		/**** Initialize 0-key for balance ****/
+		if (localStorage.length <= 1) {
+			alert("resetting balance!")
+			localStorage.setItem("balance",0);
+			$("#balance").html("Balance: $0");
+			//$("#balance").html("Balance bad: "+localStorage.getItem("balance"));
+		}
+		if (localStorage.length > 1) {
+			balanceF = parseFloat(localStorage.getItem("balance")).formatMoney();
+			//alert(balanceF);
+			$("#balance").html("Balance: "+ balanceF);
+		}
+
 		/**** Save form data ****/
 		$("#commit").click(function() {
 		    if ($(window).width() < 768)
 				$(".slideBlock").css('display', 'none');
 			validate();
 		});
-
-		/**** Initialize 0-key for balance ****/
-		if (localStorage.length == 0)
-			localStorage.setItem("balance",0);
-		$("#balance").html("Balance: $"+localStorage.getItem("balance"));
 
 		/**** Load data from local storage on page load ****/
 		if (localStorage.length) {
@@ -111,14 +136,21 @@ function save() {
 	localStorage.setItem(Math.floor((localStorage.length-1)/4)+".income",incomeIn.val());
 	localStorage.setItem(Math.floor((localStorage.length-1)/4)+".date",dateIn.val());
 
-	oldBalance = parseInt(localStorage.getItem("balance"));
+	oldBalance = parseFloat(localStorage.getItem("balance"));
 	newItem = 0;
 	if (isCurrency(expenseIn.val()))
 		newItem = -expenseIn.val();
 	else
 		newItem = incomeIn.val();
-	newBalance = parseFloat(oldBalance) + parseFloat(newItem);
-	console.log(newBalance);
+	newBalance = (oldBalance) + parseFloat(newItem);
+
+	console.log("oldBalance: "+ (oldBalance));
+	console.log("newItem: "+ parseFloat(newItem));
+
+	console.log("newBalance: "+ newBalance);
 	localStorage.setItem("balance", newBalance);
-	$("#balance").html("Balance: $"+localStorage.getItem("balance"));
+
+	alert( newBalance.formatMoney() );
+	balanceF = newBalance.formatMoney();
+	$("#balance").html(newBalance.formatMoney());
 }
