@@ -51,7 +51,7 @@ $(function() {
 		if (localStorage.length <= 1) {
 			// alert("resetting balance!")
 			localStorage.setItem("balance",0);
-			$("#balance").html("Balance: $0");
+			$("#balance").html("Balance: "+parseInt(localStorage.getItem("balance")).formatMoney());
 			//$("#balance").html("Balance bad: "+localStorage.getItem("balance"));
 		}
 		if (localStorage.length > 1) {
@@ -182,6 +182,14 @@ function remove(cursor) {
 	newBalance = oldBalance - parseFloat(oldItem);
 	localStorage.setItem("balance", newBalance);
 	$("#balance").html("Balance: " + newBalance.formatMoney());
+	printTable();
+}
+
+function clear() {
+	localStorage.clear();
+	localStorage.setItem("balance", 0);
+	console.log("balance is " + localStorage.getItem("balance"));
+	$("#balance").html("Balance: " + parseInt(localStorage.getItem("balance")).formatMoney());
 	printTable();
 }
 
