@@ -48,7 +48,7 @@ $(function() {
 
 		/**** Initialize 0-key for balance ****/
 		if (localStorage.length <= 1) {
-			alert("resetting balance!")
+			// alert("resetting balance!")
 			localStorage.setItem("balance",0);
 			$("#balance").html("Balance: $0");
 			//$("#balance").html("Balance bad: "+localStorage.getItem("balance"));
@@ -69,12 +69,14 @@ $(function() {
 		/**** Load data from local storage on page load ****/
 		if (localStorage.length) {
 			htmlData = "";
-			for (var i = 0; i < (localStorage.length-1)/4; i++) {
+			for (var i = 0; i < (localStorage.length-1)/5; i++) {
 				// alert(localStorage.getItem(i+".note"));
 				// alert(localStorage.getItem(i+".expense"));
 				// alert(localStorage.getItem(i+".income"));
 				// alert(localStorage.getItem(i+".date"));
-           		htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td></td></tr>";
+				//alert(localStorage.getItem(i+".active"));
+				if (localStorage.getItem(i+".active") == "true")
+           			htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
       		}
       		$(".data").html(htmlData);
 		}
@@ -101,7 +103,7 @@ function isExpOrInc () {
 		return false;
 }
 
-// Checck if date is MM/DD/YYYY
+// Check if date is MM/DD/YYYY
 function isGoodDate(dt){
 	var reGoodDate = /^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/;
 	return reGoodDate.test(dt);
@@ -131,10 +133,11 @@ function validate() {
 }
 
 function save() {
-	localStorage.setItem(Math.floor((localStorage.length-1)/4)+".note",noteIn.val());
-	localStorage.setItem(Math.floor((localStorage.length-1)/4)+".expense",expenseIn.val());
-	localStorage.setItem(Math.floor((localStorage.length-1)/4)+".income",incomeIn.val());
-	localStorage.setItem(Math.floor((localStorage.length-1)/4)+".date",dateIn.val());
+	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".active",true);
+	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".note",noteIn.val());
+	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".expense",expenseIn.val());
+	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".income",incomeIn.val());
+	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".date",dateIn.val());
 
 	oldBalance = parseFloat(localStorage.getItem("balance"));
 	newItem = 0;
@@ -150,7 +153,47 @@ function save() {
 	console.log("newBalance: "+ newBalance);
 	localStorage.setItem("balance", newBalance);
 
-	alert( newBalance.formatMoney() );
+	//alert( newBalance.formatMoney() );
 	balanceF = newBalance.formatMoney();
-	$("#balance").html(newBalance.formatMoney());
+	$("#balance").html("Balance: " + newBalance.formatMoney());
+
+	htmlData = "";
+			for (var i = 0; i < (localStorage.length-1)/5; i++) {
+				// alert(localStorage.getItem(i+".note"));
+				// alert(localStorage.getItem(i+".expense"));
+				// alert(localStorage.getItem(i+".income"));
+				// alert(localStorage.getItem(i+".date"));
+				//alert(localStorage.getItem(i+".active"));
+				if (localStorage.getItem(i+".active") == "true")
+           			htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
+      		}
+      		$(".data").html(htmlData);
+}
+
+function remove(cursor) {
+	// alert("remove "+cursor);
+	localStorage.setItem(cursor + ".active", false);
+
+	oldBalance = localStorage.getItem("balance");
+	oldItem = "";
+	if (isCurrency(localStorage.getItem(cursor + ".income"))) {
+		oldItem = localStorage.getItem(cursor + ".income");
+	} else {
+		oldItem = -localStorage.getItem(cursor + ".expense");
+	}
+	newBalance = oldBalance - parseFloat(oldItem);
+	localStorage.setItem("balance", newBalance);
+	$("#balance").html("Balance: " + newBalance.formatMoney());
+
+	htmlData = "";
+	for (var i = 0; i < (localStorage.length-1)/5; i++) {
+		// alert(localStorage.getItem(i+".note"));
+		// alert(localStorage.getItem(i+".expense"));
+		// alert(localStorage.getItem(i+".income"));
+		// alert(localStorage.getItem(i+".date"));
+		// alert(localStorage.getItem(i+".active"));
+		if (localStorage.getItem(i+".active") == "true")
+   			htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
+		}
+	$(".data").html(htmlData);
 }
