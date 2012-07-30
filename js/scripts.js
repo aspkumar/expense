@@ -7,20 +7,21 @@ var	incomeIn = $("#income");
 var	dateIn = $("#datepicker");
 
 /**** Currency reg ex for balance ****/
-	// Extend the default Number object with a formatMoney() method:
-	// usage: someVar.formatMoney(decimalPlaces, symbol, thousandsSeparator, decimalSeparator)
-	// defaults: (2, "$", ",", ".")
-	Number.prototype.formatMoney = function(places, symbol, thousand, decimal) {
-		places = !isNaN(places = Math.abs(places)) ? places : 2;
-		symbol = symbol !== undefined ? symbol : "$";
-		thousand = thousand || ",";
-		decimal = decimal || ".";
-		var number = this, 
-		    negative = number < 0 ? "-" : "",
-		    i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + "",
-		    j = (j = i.length) > 3 ? j % 3 : 0;
-		return symbol + negative + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "");
-	};
+// Extend the default Number object with a formatMoney() method:
+// usage: someVar.formatMoney(decimalPlaces, symbol, thousandsSeparator, decimalSeparator)
+// defaults: (2, "$", ",", ".")
+Number.prototype.formatMoney = function(places, symbol, thousand, decimal) {
+	places = !isNaN(places = Math.abs(places)) ? places : 2;
+	symbol = symbol !== undefined ? symbol : "$";
+	thousand = thousand || ",";
+	decimal = decimal || ".";
+	var number = Math.round(this*Math.pow(10,2))/Math.pow(10,2), // account for float inaccuracies
+	    negativeL = number < 0 ? "(" : "",
+	    negativeR = number < 0 ? ")" : "",
+	    i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + "",
+	    j = (j = i.length) > 3 ? j % 3 : 0;
+	return negativeL + symbol + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "") + negativeR;
+};
 
 $(function() {
 		var env = "PROD"; //DEV-TEST-PROD
@@ -68,17 +69,7 @@ $(function() {
 
 		/**** Load data from local storage on page load ****/
 		if (localStorage.length) {
-			htmlData = "";
-			for (var i = 0; i < (localStorage.length-1)/5; i++) {
-				// alert(localStorage.getItem(i+".note"));
-				// alert(localStorage.getItem(i+".expense"));
-				// alert(localStorage.getItem(i+".income"));
-				// alert(localStorage.getItem(i+".date"));
-				//alert(localStorage.getItem(i+".active"));
-				if (localStorage.getItem(i+".active") == "true")
-           			htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
-      		}
-      		$(".data").html(htmlData);
+			printTable();
 		}
 });
 
@@ -106,6 +97,9 @@ function isExpOrInc () {
 // Check if date is MM/DD/YYYY
 function isGoodDate(dt){
 	var reGoodDate = /^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/;
+	if (dt == "") {
+		return false;
+	}
 	return reGoodDate.test(dt);
 }
 
@@ -118,10 +112,25 @@ function validate() {
 	console.log("date: " + dateIn.val());
 
 	console.log("note non-blank: " + isNonblank(noteIn.val()));
+	if (!isNonblank(noteIn.val())) {
+		alert("Item description cannot be blank.");
+	}
+	console.log("income or expense (not both): " + isExpOrInc());
 	console.log("expense is currency: " + isCurrency(expenseIn.val()));
 	console.log("income is currency: " + isCurrency(incomeIn.val()));
-	console.log("income or expense (not both): " + isExpOrInc());
+	if (isNonblank(expenseIn.val()) && isNonblank(incomeIn.val())) {
+		alert("Item cannot be an expense and an income.")
+	}
+	if (!isNonblank(expenseIn.val()) && !isCurrency(incomeIn.val())) {
+		alert("Income field must be a currency: either a whole number or a number with 2 decimal places.");
+	}
+	if (!isNonblank(incomeIn.val()) && !isCurrency(expenseIn.val())) {
+		alert("Expense field must be a currency: either a whole number or a number with 2 decimal places.");
+	}
 	console.log("dt is in mm/dd/yyyy format: " + isGoodDate(dateIn.val()));
+	if (!isGoodDate(dateIn.val())) {
+		alert("Date must be in MM/DD/YYYY format.")
+	}
 
 	if( isNonblank(noteIn.val()) && isExpOrInc() && ( isCurrency(expenseIn.val()) || isCurrency(incomeIn.val()) ) && isGoodDate(dateIn.val()) ) {
 		console.log("everything is in working order!");
@@ -156,18 +165,7 @@ function save() {
 	//alert( newBalance.formatMoney() );
 	balanceF = newBalance.formatMoney();
 	$("#balance").html("Balance: " + newBalance.formatMoney());
-
-	htmlData = "";
-			for (var i = 0; i < (localStorage.length-1)/5; i++) {
-				// alert(localStorage.getItem(i+".note"));
-				// alert(localStorage.getItem(i+".expense"));
-				// alert(localStorage.getItem(i+".income"));
-				// alert(localStorage.getItem(i+".date"));
-				//alert(localStorage.getItem(i+".active"));
-				if (localStorage.getItem(i+".active") == "true")
-           			htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
-      		}
-      		$(".data").html(htmlData);
+	printTable();
 }
 
 function remove(cursor) {
@@ -184,16 +182,18 @@ function remove(cursor) {
 	newBalance = oldBalance - parseFloat(oldItem);
 	localStorage.setItem("balance", newBalance);
 	$("#balance").html("Balance: " + newBalance.formatMoney());
+	printTable();
+}
 
+function printTable() {
 	htmlData = "";
 	for (var i = 0; i < (localStorage.length-1)/5; i++) {
-		// alert(localStorage.getItem(i+".note"));
-		// alert(localStorage.getItem(i+".expense"));
-		// alert(localStorage.getItem(i+".income"));
-		// alert(localStorage.getItem(i+".date"));
-		// alert(localStorage.getItem(i+".active"));
-		if (localStorage.getItem(i+".active") == "true")
-   			htmlData += "<tr><td>"+i+"</td><td>"+localStorage.getItem(i+".note")+"</td><td>"+localStorage.getItem(i+".expense")+"</td><td>"+localStorage.getItem(i+".income")+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
+		if (localStorage.getItem(i+".active") == "true") {
+			if (isCurrency( localStorage.getItem(i+".expense") ))
+				htmlData += "<tr><td>"+localStorage.getItem(i+".note")+"</td><td>"+parseFloat(localStorage.getItem(i+".expense")).formatMoney()+"</td><td></td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
+			else
+			 	htmlData += "<tr><td>"+localStorage.getItem(i+".note")+"</td><td></td><td>"+parseFloat(localStorage.getItem(i+".income")).formatMoney()+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";	
 		}
+	}
 	$(".data").html(htmlData);
 }

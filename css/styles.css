@@ -1,3 +1,7 @@
+body {
+	background-color: #625458 !important;
+}
+
 #newItemForm {
 	margin: 0;
 }
@@ -18,6 +22,26 @@
 .icon-usd-pos {
 	background-image: url("../img/glyphicons-usd-pos.png") !important;
     background-position: 0 0 !important;
+}
+
+.well {
+	text-align: center;
+	background-color: #22302C !important;
+}
+
+.hero-unit {
+	text-align: center;
+	background-color: #22302C !important;
+	color: #fff;
+}
+
+thead {
+	background-color: #22302C !important;
+	color: #fff;
+}
+
+tbody {
+	background-color: #fff !important
 }
 
 /* Landscape phones and down */
@@ -55,6 +79,7 @@
 	}
 	.add-on {
 		margin-bottom: .6em;
+		margin-top: -2px;
 	}
 }
  
