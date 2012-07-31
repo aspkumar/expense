@@ -112,19 +112,19 @@ function validate() {
 		isGoodDate(dateIn.val()) ) {
 		console.log("everything is in working order!");
 		localStorage.setItem("error-active", 0);
-		localStroage.setItem("error-note", '');
-		localStroage.setItem("error-expense", '');
-		localStroage.setItem("error-income", '');
-		localStroage.setItem("error-date", '');
+		localStorage.setItem("error-note", null);
+		localStorage.setItem("error-expense", null);
+		localStorage.setItem("error-income", null);
+		localStorage.setItem("error-date", null);
 		save();
 	} else {
 		console.log("there is an error!");
 		localStorage.setItem("error", '<ul>'+error+'</ul>');
 		localStorage.setItem("error-active", 1);
-		localStroage.setItem("error-note", noteIn.val());
-		localStroage.setItem("error-expense", expenseIn.val());
-		localStroage.setItem("error-income", incomeIn.val());
-		localStroage.setItem("error-date", dateIn.val());
+		localStorage.setItem("error-note", noteIn.val());
+		localStorage.setItem("error-expense", expenseIn.val());
+		localStorage.setItem("error-income", incomeIn.val());
+		localStorage.setItem("error-date", dateIn.val());
 		printErrors();
 		// repopulate form with previous entries
 	}
@@ -170,7 +170,15 @@ function remove(cursor) {
 function clear() {
 	localStorage.clear();
 	localStorage.setItem("balance", 0);
+	localStorage.setItem("error-active", 0);
 	printTable();
+	$("#note").val("");
+	$("#expense").val("");
+	$("#income").val("");
+	$("#datepicker").val("");
+	if ($("#error").length == 1) {
+		$("#error").hide();
+	}
 }
 
 function printTable() {
@@ -221,8 +229,21 @@ function printBalance() {
 function printErrors() {
 	console.log("new error - adding <div> with <ul>");
 	//alert("printErrors");
-	if ($("#error").length == 0)
+	if ($("#error").length == 0) {
 		$("#input").after('<div id="error" class="row well span6 offset2"><ul>'+localStorage.getItem("error")+'</ul></div>');
-	else
+	} else {
 		$("#error").html('<ul>'+localStorage.getItem("error")+'</ul>');
+	}
+	if (localStorage.getItem("error-note") != null) {
+		$("#note").val(localStorage.getItem("error-note"));
+	}
+	if (localStorage.getItem("error-expense") != null) {
+		$("#expense").val(localStorage.getItem("error-expense"));
+	}
+	if (localStorage.getItem("error-income") != null) {
+		$("#income").val(localStorage.getItem("error-income"));
+	}
+	if (localStorage.getItem("error-date") != null) {
+		$("#datepicker").val(localStorage.getItem("error-date"));
+	}
 }
