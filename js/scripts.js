@@ -1,82 +1,57 @@
-var note, expense, income, date;
-var balanceF = "";
-
 var noteIn = $("#note");
 var expenseIn = $("#expense");
 var	incomeIn = $("#income");
 var	dateIn = $("#datepicker");
 
-/**** Currency reg ex for balance ****/
-// Extend the default Number object with a formatMoney() method:
-// usage: someVar.formatMoney(decimalPlaces, symbol, thousandsSeparator, decimalSeparator)
-// defaults: (2, "$", ",", ".")
-Number.prototype.formatMoney = function(places, symbol, thousand, decimal) {
-	places = !isNaN(places = Math.abs(places)) ? places : 2;
-	symbol = symbol !== undefined ? symbol : "$";
-	thousand = thousand || ",";
-	decimal = decimal || ".";
-	var number = Math.round(this*Math.pow(10,2))/Math.pow(10,2), // account for float inaccuracies
-	    negativeL = number < 0 ? "(" : "",
-	    negativeR = number < 0 ? ")" : "",
-	    i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + "",
-	    j = (j = i.length) > 3 ? j % 3 : 0;
-	return negativeL + symbol + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "") + negativeR;
-};
-
 $(function() {
-		var env = "PROD"; //DEV-TEST-PROD
+	// var env = "PROD"; //DEV-TEST-PROD
+	// if (Modernizr.localstorage) {
+	// 	// window.localStorage is available!
+	// 	if (env=="DEV" || env=="TEST") { }
+	// } else {
+	// 	// no native support for HTML5 storage :(
+	// 	if (env=="DEV" || env=="TEST") alert("localstorage is not available!");
+	// }
 
-		$( "#datepicker" ).datepicker({
+	// Apply datepicker to DOM
+	$( "#datepicker" ).datepicker();
 
-		});
-
-		if (Modernizr.localstorage) {
-		  // window.localStorage is available!
-		  if (env=="DEV" || env=="TEST") {
-		  	
-			}
-		} else {
-		  // no native support for HTML5 storage :(
-		  // maybe try dojox.storage or a third-party solution
-		  if (env=="DEV" || env=="TEST") alert("localstorage is not available!");
+	// Responsive dropdown for input		
+	$("#note").on("click", function() {
+		if ($(window).width() < 768) {
+			$(".slideBlock").css('display', 'inline');
 		}
+	});
 
-		/**** Responsive dropdown for input ****/		
-		$("#note").on("click", function() {
-			if ($(window).width() < 768)
-				$(".slideBlock").css('display', 'inline');
-		});
+	// Initialize 0-key for balance
+	if (localStorage.length <= 1) {
+		localStorage.setItem("balance",0);
+	}
 
-		/**** Initialize 0-key for balance ****/
-		if (localStorage.length <= 1) {
-			// alert("resetting balance!")
-			localStorage.setItem("balance",0);
-			$("#balance").html("Balance: "+parseInt(localStorage.getItem("balance")).formatMoney());
-			//$("#balance").html("Balance bad: "+localStorage.getItem("balance"));
+	// Load data from local storage on page load
+	if (localStorage.length) {
+		printTable();
+	}
+
+	// Print errors if applicable and repop form entries
+	if (localStorage.getItem("error-active") == 1) {
+		//alert("anon - error-active: "+localStorage.getItem("error-active"));
+		printErrors();
+	}
+
+	// Save form data
+	$("#commit").click(function() {
+		if ($(window).width() < 768) {
+			$(".slideBlock").css('display', 'none');
 		}
-		if (localStorage.length > 1) {
-			balanceF = parseFloat(localStorage.getItem("balance")).formatMoney();
-			//alert(balanceF);
-			$("#balance").html("Balance: "+ balanceF);
-		}
-
-		/**** Save form data ****/
-		$("#commit").click(function() {
-		    if ($(window).width() < 768)
-				$(".slideBlock").css('display', 'none');
-			validate();
-		});
-
-		/**** Load data from local storage on page load ****/
-		if (localStorage.length) {
-			printTable();
-		}
+		validate();
+	});
 });
 
 // Check if string is currency
 var isCurrency_re    = /^\s*(\+|-)?((\d+(\.\d\d)?)|(\.\d\d))\s*$/;
 function isCurrency (s) {
-		return String(s).search (isCurrency_re) != -1
+	return String(s).search (isCurrency_re) != -1
 }
 
 // Check if note is non-blank
@@ -87,11 +62,11 @@ function isNonblank (s) {
 
 // Check if either income or expense
 function isExpOrInc () {
-	if (( isNonblank(expenseIn.val()) && !isNonblank(incomeIn.val()) ) || 
-		( !isNonblank(expenseIn.val()) && isNonblank(incomeIn.val()) ))
-			return true;
-	else
-		return false;
+	if (( isNonblank(expenseIn.val()) && !isNonblank(incomeIn.val()) ) || ( !isNonblank(expenseIn.val()) 
+		&& isNonblank(incomeIn.val()) )) {
+		return true;
+	}
+	return false;
 }
 
 // Check if date is MM/DD/YYYY
@@ -103,9 +78,10 @@ function isGoodDate(dt){
 	return reGoodDate.test(dt);
 }
 
+// Validate form inputs
 function validate() {
+	error = '';
 	console.log("validating");
-
 	console.log("note: " + noteIn.val());
 	console.log("expense: " + expenseIn.val());
 	console.log("income: " + incomeIn.val());
@@ -113,34 +89,48 @@ function validate() {
 
 	console.log("note non-blank: " + isNonblank(noteIn.val()));
 	if (!isNonblank(noteIn.val())) {
-		alert("Item description cannot be blank.");
+		error += '<li>Item description cannot be blank.</li>';
 	}
 	console.log("income or expense (not both): " + isExpOrInc());
 	console.log("expense is currency: " + isCurrency(expenseIn.val()));
 	console.log("income is currency: " + isCurrency(incomeIn.val()));
 	if (isNonblank(expenseIn.val()) && isNonblank(incomeIn.val())) {
-		alert("Item cannot be an expense and an income.")
+		error += '<li>Item cannot be an expense and an income.</li>';
 	} else if (!isNonblank(expenseIn.val()) && !isNonblank(incomeIn.val())) {
-		alert("Item must be an expense or an income.")
+		error += '<li>Item must be an expense or an income.</li>';
 	} else if (!isNonblank(expenseIn.val()) && !isCurrency(incomeIn.val())) {
-		alert("Income field must be a currency: either a whole number or a number with 2 decimal places.");
+		error += '<li>Income field must be a currency: either a whole number or a number with 2 decimal places.</li>';
 	} else if (!isNonblank(incomeIn.val()) && !isCurrency(expenseIn.val())) {
-		alert("Expense field must be a currency: either a whole number or a number with 2 decimal places.");
+		error += '<li>Expense field must be a currency: either a whole number or a number with 2 decimal places.</li>';
 	}
 	console.log("dt is in mm/dd/yyyy format: " + isGoodDate(dateIn.val()));
 	if (!isGoodDate(dateIn.val())) {
-		alert("Date must be in MM/DD/YYYY format.")
+		error += '<li>Date must be in MM/DD/YYYY format.</li>';
 	}
 
-	if( isNonblank(noteIn.val()) && isExpOrInc() && ( isCurrency(expenseIn.val()) || isCurrency(incomeIn.val()) ) && isGoodDate(dateIn.val()) ) {
+	if( isNonblank(noteIn.val()) && isExpOrInc() && ( isCurrency(expenseIn.val()) || isCurrency(incomeIn.val()) ) && 
+		isGoodDate(dateIn.val()) ) {
 		console.log("everything is in working order!");
+		localStorage.setItem("error-active", 0);
+		localStroage.setItem("error-note", '');
+		localStroage.setItem("error-expense", '');
+		localStroage.setItem("error-income", '');
+		localStroage.setItem("error-date", '');
 		save();
 	} else {
 		console.log("there is an error!");
+		localStorage.setItem("error", '<ul>'+error+'</ul>');
+		localStorage.setItem("error-active", 1);
+		localStroage.setItem("error-note", noteIn.val());
+		localStroage.setItem("error-expense", expenseIn.val());
+		localStroage.setItem("error-income", incomeIn.val());
+		localStroage.setItem("error-date", dateIn.val());
+		printErrors();
 		// repopulate form with previous entries
 	}
 }
 
+// Save form input to localStorage
 function save() {
 	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".active",true);
 	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".note",noteIn.val());
@@ -149,27 +139,20 @@ function save() {
 	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".date",dateIn.val());
 
 	oldBalance = parseFloat(localStorage.getItem("balance"));
-	newItem = 0;
-	if (isCurrency(expenseIn.val()))
-		newItem = -expenseIn.val();
-	else
-		newItem = incomeIn.val();
+	newItem = isCurrency(expenseIn.val()) ? -expenseIn.val() : incomeIn.val();
 	newBalance = (oldBalance) + parseFloat(newItem);
 
 	console.log("oldBalance: "+ (oldBalance));
 	console.log("newItem: "+ parseFloat(newItem));
-
 	console.log("newBalance: "+ newBalance);
+	
 	localStorage.setItem("balance", newBalance);
-
-	//alert( newBalance.formatMoney() );
-	balanceF = newBalance.formatMoney();
-	$("#balance").html("Balance: " + newBalance.formatMoney());
 	printTable();
 }
 
+// Remove particular entry
 function remove(cursor) {
-	// alert("remove "+cursor);
+	// Stays in memory with the option to create an undo option
 	localStorage.setItem(cursor + ".active", false);
 
 	oldBalance = localStorage.getItem("balance");
@@ -181,27 +164,65 @@ function remove(cursor) {
 	}
 	newBalance = oldBalance - parseFloat(oldItem);
 	localStorage.setItem("balance", newBalance);
-	$("#balance").html("Balance: " + newBalance.formatMoney());
 	printTable();
 }
 
 function clear() {
 	localStorage.clear();
 	localStorage.setItem("balance", 0);
-	console.log("balance is " + localStorage.getItem("balance"));
-	$("#balance").html("Balance: " + parseInt(localStorage.getItem("balance")).formatMoney());
 	printTable();
 }
 
 function printTable() {
-	htmlData = "";
+	printBalance();
+	htmlData = '';
 	for (var i = 0; i < (localStorage.length-1)/5; i++) {
 		if (localStorage.getItem(i+".active") == "true") {
-			if (isCurrency( localStorage.getItem(i+".expense") ))
-				htmlData += "<tr><td>"+localStorage.getItem(i+".note")+"</td><td>"+parseFloat(localStorage.getItem(i+".expense")).formatMoney()+"</td><td></td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";
-			else
-			 	htmlData += "<tr><td>"+localStorage.getItem(i+".note")+"</td><td></td><td>"+parseFloat(localStorage.getItem(i+".income")).formatMoney()+"</td><td>"+localStorage.getItem(i+".date")+"</td><td><button onClick=\"javsacript: remove("+i+")\" class=\"btn btn-danger btn-xsmall\"><i class=\"icon-trash icon-white\"></i></button></td></tr>";	
+			if (isCurrency( localStorage.getItem(i+".expense") )) {
+				htmlData += '<tr><td>'+localStorage.getItem(i+".note")+'</td>\
+				<td>'+formatMoney(parseFloat(localStorage.getItem(i+".expense")))+'</td><td></td>\
+				<td>'+localStorage.getItem(i+".date")+'</td>\
+				<td><button onClick="javsacript: remove('+i+')" class="btn btn-danger btn-xsmall">\
+				<i class="icon-trash icon-white"></i></button></td></tr>';
+			} else {
+			 	htmlData += '<tr><td>'+localStorage.getItem(i+".note")+'</td>\
+			 	<td></td><td>'+formatMoney(parseFloat(localStorage.getItem(i+".income")))+'</td>\
+			 	<td>'+localStorage.getItem(i+".date")+'</td>\
+			 	<td><button onClick="javsacript: remove('+i+')" class="btn btn-danger btn-xsmall">\
+			 	<i class="icon-trash icon-white"></i></button></td></tr>';	
+			}
 		}
 	}
 	$(".data").html(htmlData);
+}
+
+/**** Currency reg ex for balance ****/
+// Extend the default Number object with a formatMoney() method:
+// usage: formatMoney(amount, decimalPlaces, symbol, thousandsSeparator, decimalSeparator)
+// defaults: (N/A, 2, "$", ",", ".")
+function formatMoney(amount, places, symbol, thousand, decimal) {
+	places = !isNaN(places = Math.abs(places)) ? places : 2;
+	symbol = symbol !== undefined ? symbol : "$";
+	thousand = thousand || ",";
+	decimal = decimal || ".";
+	var number = Math.round(amount*Math.pow(10,2))/Math.pow(10,2), // account for float inaccuracies
+		negativeL = number < 0 ? "(" : "",
+		negativeR = number < 0 ? ")" : "",
+		i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + "",
+		j = (j = i.length) > 3 ? j % 3 : 0;
+	return negativeL + symbol + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) +
+		(places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "") + negativeR;
+}
+
+function printBalance() {
+	$("#balance").html('Balance: ' + formatMoney(parseInt(localStorage.getItem("balance"))));
+}
+
+function printErrors() {
+	console.log("new error - adding <div> with <ul>");
+	//alert("printErrors");
+	if ($("#error").length == 0)
+		$("#input").after('<div id="error" class="row well span6 offset2"><ul>'+localStorage.getItem("error")+'</ul></div>');
+	else
+		$("#error").html('<ul>'+localStorage.getItem("error")+'</ul>');
 }
