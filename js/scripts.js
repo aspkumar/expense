@@ -120,11 +120,11 @@ function validate() {
 	console.log("income is currency: " + isCurrency(incomeIn.val()));
 	if (isNonblank(expenseIn.val()) && isNonblank(incomeIn.val())) {
 		alert("Item cannot be an expense and an income.")
-	}
-	if (!isNonblank(expenseIn.val()) && !isCurrency(incomeIn.val())) {
+	} else if (!isNonblank(expenseIn.val()) && !isNonblank(incomeIn.val())) {
+		alert("Item must be an expense or an income.")
+	} else if (!isNonblank(expenseIn.val()) && !isCurrency(incomeIn.val())) {
 		alert("Income field must be a currency: either a whole number or a number with 2 decimal places.");
-	}
-	if (!isNonblank(incomeIn.val()) && !isCurrency(expenseIn.val())) {
+	} else if (!isNonblank(incomeIn.val()) && !isCurrency(expenseIn.val())) {
 		alert("Expense field must be a currency: either a whole number or a number with 2 decimal places.");
 	}
 	console.log("dt is in mm/dd/yyyy format: " + isGoodDate(dateIn.val()));
