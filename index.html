@@ -26,6 +26,8 @@
 	<script type="text/javascript" src="../expense/js/plugins/jqplot.canvasOverlay.min.js"></script>
 	<script type="text/javascript" src="../expense/js/plugins/jqplot.dateAxisRenderer.min.js"></script>
 	<script type="text/javascript" src="../expense/js/plugins/jqplot.highlighter.min.js"></script>
+	<script type="text/javascript" src="../expense/js/plugins/jqplot.ohlcRenderer.min.js"></script>
+	<script type="text/javascript" src="../expense/js/plugins/jqplot.cursor.min.js"></script>
 	<link rel="stylesheet" type="text/css" hrf="../expense/css/jquery.jqplot.min.css" />
 </head>
 <body>
@@ -103,11 +105,12 @@
 	<div class="modal hide" id="graphs">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"><i class="icon-remove"></i></button>
-			<h3>Graph your finances</h3>
+			<h3>Visualize your finances</h3>
 		</div>
 		<div class="modal-body">
 			<div id="chart"></div>
-			<p>1 Day - 1 Month - 1 Year - All</p>
+			<p class="center"><span class="expense">Expense</span>&nbsp;<span class="income">Income</span></p>
+			<p><i class="icon-question-sign"></i> Click and drag on the chart to zoom in. Double-click the chart to reset.</p>
 		</div>
 		<div class="modal-footer">
 			<a href="#" class="btn" data-dismiss="modal">Close</a>

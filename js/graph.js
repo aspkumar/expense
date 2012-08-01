@@ -1,71 +1,80 @@
 var pointsExp = [];
 var pointsInc = [];
 var graphTitle = "";
+var plot1;
 
 $(function() {
 	$("#graphBtn").on("click", function() {
 		$('#graphs').modal('toggle');
-		populate1Month();
+		populate();
 		chartIt();
 	});
+	$('#graphs').on('hidden', function () {
+		plot1.redraw();
+	})
 });
 
 // monPoints.push([i, Math.cos(i)]);
 
-function populate1Month() {
+function populate() {
 	var monExpPoints = [];
 	var monIncPoints = [];
 	var monExpCount = [];
 	var monIncCount = [];
-	graphTitle = "30 Days"
-	for (var i = 0; i < (localStorage.length-1)/5; i++) {
-		// plot if point is active
-		if ( localStorage.getItem(i+".active") == "true" ) {
-			date = new Date(localStorage.getItem(i+".date"));
-			if ( localStorage.getItem(i+".expense") != "" ) {
-				monExpPoints.push([date, parseFloat(localStorage.getItem(i+".expense"))]);
-			} else {
-				monIncPoints.push([date, parseFloat(localStorage.getItem(i+".income"))]);
+	if ( localStorage.length >= 1 ) {
+		for (var i = 0; i < (localStorage.length-1)/5; i++) {
+			// plot if point is active
+			if ( localStorage.getItem(i+".active") == "true" ) {
+				date = new Date(localStorage.getItem(i+".date"));
+				if ( localStorage.getItem(i+".expense") != "" ) {
+					monExpPoints.push([date, parseFloat(localStorage.getItem(i+".expense"))]);
+				} else {
+					monIncPoints.push([date, parseFloat(localStorage.getItem(i+".income"))]);
+				}
 			}
 		}
+	} else {
+		$('#chart').html('<h3>You have no data to graph!</h3>');
 	}
 	pointsExp = monExpPoints;
 	pointsInc = monIncPoints;
 }
 
-function populate3Month() {
-
-}
-
-function populate6Month() {
-
-}
-
-function populate12Month() {
-
-}
-
-function populateAll() {
-
-}
-
 function chartIt() {
-	var plot1 = $.jqplot('chart', [pointsExp, pointsInc], {
-		title: graphTitle,
-		series:[{showMarker:true}],
+	plot1 = $.jqplot('chart', [pointsExp, pointsInc], {
+		series:[
+			{
+				label:'Expense',
+				showLine:false
+			},
+			{
+				label:'Income',
+				showLine:false
+			}
+		],
 		axes:{
 			xaxis:{
-				label:'Date',
-				rendererOptions: { forceTickAt0: true, forceTickAt100: false },
 				padMin: 0,
 				renderer:$.jqplot.DateAxisRenderer,
+				rendererOptions: { 
+					forceTickAt0: true,
+					tickInset: 0 
+				},
 				tickOptions:{
 					formatString:'%b&nbsp;%#d'
-				} 
+				},
+				tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+				tickOptions: {
+					angle: -30
+				}
 			},
 			yaxis:{
+				renderer: $.jqplot.CanvasAxisRenderer,
+				rendererOptions: {
+					tickInset: 0 
+				},
 				tickOptions:{
-					formatString:'$%.2f'
+					formatString:'$%.2f',
 				}
 			}
 		},
@@ -77,7 +86,10 @@ function chartIt() {
 		seriesDefaults: {
 			rendererOptions: {
 				smooth: true,
-				varyByColor: true
+				varyByColor: true,
+				animation: {
+					show: true
+				}
 			}
 		},
 		canvasOverlay: {
@@ -93,6 +105,10 @@ function chartIt() {
 					xOffset: 0
 				}}
 			]
-		}
+		},
+		cursor:{
+			show: true, 
+			zoom: true
+        }
 	});
 }

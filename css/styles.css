@@ -58,8 +58,24 @@ tbody {
 	float: right;
 }
 
+.center {
+	text-align: center;
+}
+
 .controls>a {
 	margin: 5px 10px 5px !important;
+}
+
+.expense {
+	color: #C7754C;
+	border: #C7754C 2px solid;
+	padding: 2px;
+}
+
+.income {
+	color: #73C774;
+	border: #73C774 2px solid;
+	padding: 2px;
 }
 
 /* Landscape phones and down */
