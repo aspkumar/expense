@@ -1,7 +1,7 @@
 var noteIn = $("#note");
 var expenseIn = $("#expense");
-var	incomeIn = $("#income");
-var	dateIn = $("#datepicker");
+var incomeIn = $("#income");
+var dateIn = $("#datepicker");
 
 $(function() {
 	// var env = "PROD"; //DEV-TEST-PROD
@@ -142,7 +142,9 @@ function save() {
 	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".note",noteIn.val());
 	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".expense",expenseIn.val());
 	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".income",incomeIn.val());
-	localStorage.setItem(Math.floor((localStorage.length-1)/5)+".date",dateIn.val());
+	console.log("setting date to: " + dateIn.val());
+
+	localStorage.setItem(Math.floor((localStorage.length-3)/5)+".date",dateIn.val());
 
 	oldBalance = parseFloat(localStorage.getItem("balance"));
 	newItem = isCurrency(expenseIn.val()) ? -expenseIn.val() : incomeIn.val();
