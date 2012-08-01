@@ -74,7 +74,7 @@ function chartIt() {
 					tickInset: 0 
 				},
 				tickOptions:{
-					formatString:'$%.2f',
+					formatString:'$%.0f',
 				}
 			}
 		},

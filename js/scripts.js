@@ -13,6 +13,12 @@ $(function() {
 	// 	if (env=="DEV" || env=="TEST") alert("localstorage is not available!");
 	// }
 
+	if (!Modernizr.localstorage) {
+		$(".hero-unit").before('<div id="error" class="row well span6 offset2">Sorry! Your browser doesn\'t support\
+			the LocalStorage spec. Please try this site in a more forward thinking browser like Google Chrome \
+			or Mozilla Firefox.</div><br/><br/>');
+	}
+
 	// Apply datepicker to DOM
 	$( "#datepicker" ).datepicker();
 
